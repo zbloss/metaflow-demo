@@ -1,4 +1,4 @@
-from metaflow import FlowSpec, step
+from metaflow import FlowSpec, step, conda
 
 class IngestData(FlowSpec):
     @staticmethod
@@ -70,7 +70,7 @@ class IngestData(FlowSpec):
         print(f"Downlaoded {url} to {custom_filename}")
         self.next(self.process_dataset)
 
-    
+    @conda(libraries={"pandas": "1.3.4"})
     @step
     def process_dataset(self):
         """
@@ -80,7 +80,6 @@ class IngestData(FlowSpec):
         """
 
         import os
-        os.system("pip install pandas==1.3.4")
         import pandas as pd
 
         with open(
