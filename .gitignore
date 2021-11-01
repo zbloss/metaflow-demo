@@ -1,3 +1,8 @@
+.metaflow/
+.ipynb_checkpoints/
+metaflow*
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
