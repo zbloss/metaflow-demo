@@ -132,3 +132,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+k8s_assets/s3_secret.yaml
