@@ -1,0 +1,1 @@
+python3 auto-mpg/ingest-data.py --environment=conda run --with=kubernetes:service_account=dev-mlflow-server,namespace=mlflow-server,cpu=1,memory=256

@@ -1,4 +1,4 @@
-from metaflow import FlowSpec, step, conda
+from metaflow import FlowSpec, step, conda, resources
 
 class IngestData(FlowSpec):
     @staticmethod
@@ -31,7 +31,8 @@ class IngestData(FlowSpec):
                 shutil.copyfileobj(r.raw, f)
 
         return local_filename
-
+    
+    @resources(cpu=1, memory=256)
     @step
     def start(self):
         """
@@ -57,6 +58,7 @@ class IngestData(FlowSpec):
         ]
         self.next(self.get_file)
 
+    @resources(cpu=1, memory=256)
     @step
     def get_file(self):
         """
@@ -70,6 +72,7 @@ class IngestData(FlowSpec):
         print(f"Downlaoded {url} to {custom_filename}")
         self.next(self.process_dataset)
 
+    @resources(cpu=1, memory=256)
     @conda(libraries={"pandas": "1.3.4"})
     @step
     def process_dataset(self):
@@ -104,6 +107,7 @@ class IngestData(FlowSpec):
 
         self.next(self.save_dataset)
 
+    @resources(cpu=1, memory=256)
     @step
     def save_dataset(self):
         """
@@ -131,6 +135,7 @@ class IngestData(FlowSpec):
         )
         self.next(self.end)
 
+    @resources(cpu=1, memory=256)
     @step
     def end(self):
         pass
