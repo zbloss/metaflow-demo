@@ -1,5 +1,7 @@
-from metaflow import FlowSpec, step, conda, resources
+from metaflow import FlowSpec, kubernetes, step, conda_base
 
+
+@conda_base(libraries={"pandas": "1.3.4", "metaflow": "2.4.3"})
 class IngestData(FlowSpec):
     @staticmethod
     def download_file(url: str, custom_filename: str = None):
@@ -15,8 +17,9 @@ class IngestData(FlowSpec):
         """
         import os
         import shutil
-        import requests
         from pathlib import Path
+
+        import requests
 
         if custom_filename is not None:
             local_filename = custom_filename
@@ -31,8 +34,14 @@ class IngestData(FlowSpec):
                 shutil.copyfileobj(r.raw, f)
 
         return local_filename
-    
-    @resources(cpu=1, memory=256)
+
+    @kubernetes(
+        cpu=1,
+        memory=256,
+        image="public.ecr.aws/outerbounds/python:3.8.6-nonroot",
+        namespace="mlflow-server",
+        service_account="dev-mlflow-server",
+    )
     @step
     def start(self):
         """
@@ -58,7 +67,13 @@ class IngestData(FlowSpec):
         ]
         self.next(self.get_file)
 
-    @resources(cpu=1, memory=256)
+    @kubernetes(
+        cpu=1,
+        memory=256,
+        image="public.ecr.aws/outerbounds/python:3.8.6-nonroot",
+        namespace="mlflow-server",
+        service_account="dev-mlflow-server",
+    )
     @step
     def get_file(self):
         """
@@ -72,8 +87,13 @@ class IngestData(FlowSpec):
         print(f"Downlaoded {url} to {custom_filename}")
         self.next(self.process_dataset)
 
-    @resources(cpu=1, memory=256)
-    @conda(libraries={"pandas": "1.3.4"})
+    @kubernetes(
+        cpu=1,
+        memory=256,
+        image="public.ecr.aws/outerbounds/python:3.8.6-nonroot",
+        namespace="mlflow-server",
+        service_account="dev-mlflow-server",
+    )
     @step
     def process_dataset(self):
         """
@@ -83,6 +103,7 @@ class IngestData(FlowSpec):
         """
 
         import os
+
         import pandas as pd
 
         with open(
@@ -107,7 +128,13 @@ class IngestData(FlowSpec):
 
         self.next(self.save_dataset)
 
-    @resources(cpu=1, memory=256)
+    @kubernetes(
+        cpu=1,
+        memory=256,
+        image="public.ecr.aws/outerbounds/python:3.8.6-nonroot",
+        namespace="mlflow-server",
+        service_account="dev-mlflow-server",
+    )
     @step
     def save_dataset(self):
         """
@@ -135,7 +162,13 @@ class IngestData(FlowSpec):
         )
         self.next(self.end)
 
-    @resources(cpu=1, memory=256)
+    @kubernetes(
+        cpu=1,
+        memory=256,
+        image="public.ecr.aws/outerbounds/python:3.8.6-nonroot",
+        namespace="mlflow-server",
+        service_account="dev-mlflow-server",
+    )
     @step
     def end(self):
         pass
